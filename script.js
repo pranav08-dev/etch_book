@@ -1,65 +1,61 @@
-* {
-    box-sizing: border-box;
-    border: 0;
-    padding: 0;
-    background-color: lightblue (0, 70%, 48%);
-}
-body {
-    font-family: 'Courier New', Courier, monospace;
-    color: hsl(0, 0%, 20%);
-    margin: 0;
-    padding: 0;
-}
+function createBoxes(numberPerRow) {
+    const container = document.querySelector('.container');
+    container.innerHTML = ""; // Clear existing boxes
+    const boxPercent = 100 / numberPerRow;
 
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
-    align-items: center;
-    justify-content: center;
-    width: 440px;
-    height: 440px;
-    border: 2px solid hsl(0, 0%, 0%); 
-
-    div {
-        background-color: hsl(0, 0%, 100%);
-        border: 1px solid hsl(0, 0%, 87%);
+    for (let i = 0; i < numberPerRow * numberPerRow; i++) {
+        const div = document.createElement('div');
+        div.style.cssText = `
+            width: ${boxPercent}%;
+            aspect-ratio: 1 / 1;
+            border: 1px solid #ccc;
+            background-color: white;
+        `;
+        container.appendChild(div);
     }
 }
 
-
-.btn {
-    display: flex;
-    justify-content: center;
-    
-    button {
-        padding: 10px;
-        border-color: hsl(244, 99%, 40%);
-        border-radius: 10px;
-        margin: 8px;
-        background-color: hsl(43, 79%, 63%);
+function changeGridSize() {
+    const gridSize = prompt("Enter new grid size (max 100):");
+    if (isNaN(gridSize) || gridSize < 1 || gridSize > 100) {
+        alert('Please enter a number between 1 and 100.');
+        return;
     }
+    createBoxes(gridSize);
 }
 
-.active {
-    background-color: hsl(211, 100%, 50%);
-    color: hsl(0, 0%, 100%);
-}
-.h1 {
-    text-align: center;
-    font-size: 2em;
-    margin: 20px 0;
-    color: hsl(0, 0%, 10%);
-}
-.h3 {
-    text-align: center;
-    font-size: 1.5em;
-    margin: 10px 0;
-    color: hsl(0, 0%, 30%);
+function applyColor(colorFunction) {
+    const divs = document.querySelectorAll(".container div");
+    divs.forEach(div => {
+        div.addEventListener("mouseenter", () => {
+            div.style.backgroundColor = colorFunction();
+        });
+    });
 }
 
-h1, h3 {
-    text-align: center; /* Centers the text horizontally */
-    display: block; /* Ensures they behave as block elements */
-    margin: 0 auto; /* Centers them horizontally if they have a width */
-}
+document.querySelector(".pencil").addEventListener("click", () => {
+    applyColor(() => 'hsl(0, 0%, 0%)'); // Black color
+});
+
+document.querySelector(".eraser").addEventListener("click", () => {
+    applyColor(() => 'white'); // White color
+});
+
+document.querySelector(".rainbow").addEventListener("click", () => {
+    applyColor(() => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')); // Random color
+});
+
+document.querySelector(".clear").addEventListener("click", () => {
+    const divs = document.querySelectorAll(".container div");
+    divs.forEach(div => div.style.backgroundColor = 'white'); // Clear all boxes
+});
+
+document.querySelector(".grid").addEventListener("click", changeGridSize);
+
+const buttons = document.querySelectorAll('.btn button');
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    });
+});
